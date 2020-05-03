@@ -5,7 +5,8 @@ const socket = io.connect('http://localhost:4000');
 const   message = document.getElementById('message'),
         handle = document.getElementById('handle'),
         btn = document.getElementById('send'),
-        output = document.getElementById('output');
+        output = document.getElementById('output'),
+        feedback = document.getElementById('feedback');
 
 // Emit events
 btn.addEventListener('click', () => {
@@ -15,9 +16,18 @@ btn.addEventListener('click', () => {
   });
 });
 
+message.addEventListener('keypress', () => {
+  socket.emit('typing', handle.value);
+});
+
 // Listen for events
 socket.on('chat', data => {
   output.innerHTML += `<p><strong>${data.handle}</strong> ${data.message}</p>`;
+  feedback.innerHTML = '';
   handle.value = '';
   message.value = '';
+});
+
+socket.on('typing', data => {
+  feedback.innerHTML = `<p><em>${data} is typing a message...</em></p>`;
 });
